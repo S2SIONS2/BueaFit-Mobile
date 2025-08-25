@@ -45,21 +45,22 @@ function RootLayoutNav() {
   const router = useRouter();
 
   useEffect(() => {
-    // Wait for the auth state to be loaded before navigating
     if (!isLoaded) {
       return;
     }
 
     const inAuthGroup = segments[0] === '(auth)';
 
+    // If the user is signed in and the initial segment is not in the auth group.
     if (token && inAuthGroup) {
-      router.replace('/(app)');
+      // Redirect to the shop selection screen.
+      router.replace('/(onboarding)/select-shop');
     } else if (!token && !inAuthGroup) {
+      // Redirect to the login screen.
       router.replace('/(auth)/login');
     }
   }, [token, segments, isLoaded]);
 
-  // Prevent rendering until the auth state is loaded
   if (!isLoaded) {
     return null; // Or a loading spinner
   }
@@ -69,6 +70,7 @@ function RootLayoutNav() {
       <Stack>
         <Stack.Screen name="(app)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(onboarding)" options={{ headerShown: false }} />
         <Stack.Screen name="menu" options={{ title: 'Menu' }} />
         <Stack.Screen name="+not-found" />
       </Stack>

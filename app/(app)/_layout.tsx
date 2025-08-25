@@ -7,6 +7,8 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { faCalendarDay } from '@fortawesome/free-solid-svg-icons/faCalendarDay';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -47,17 +49,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="booking"
         options={{
           title: '달력',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          tabBarIcon: ({ color }) => <FontAwesomeIcon size={28} icon={faCalendarDay as any} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="customer"
         options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+          title: '고객 관리',
+          // tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+          href: null
         }}
       />
     </Tabs>

@@ -13,14 +13,14 @@ export default function MenuScreen() {
       <ThemedText type="title">Menu</ThemedText>
       <View style={styles.separator} />
       
-      {/* Add navigation links here */}
-      <ThemedText style={styles.link}>Profile</ThemedText>
-      <ThemedText style={styles.link}>Settings</ThemedText>
-      <ThemedText style={styles.link}>About</ThemedText>
+      <Button title="홈" onPress={() => router.push('/(app)')} />
+      <Button title="예약 관리" onPress={() => router.push('/(app)/booking')} />
+      <Button title="고객 관리" onPress={() => router.push('/(app)/customer')} />
+      <Button title="가게 선택" onPress={() => router.push('/(onboarding)/select-shop')} />
+      <Button title="가게 추가" onPress={() => router.push('/(onboarding)/set-store')} />
 
       <View style={styles.separator} />
       
-      <Button title="Close" onPress={() => router.back()} />
       <Button title="로그아웃" onPress={signOut} />
     </ThemedView>
   );
@@ -44,5 +44,6 @@ const styles = StyleSheet.create({
   link: {
     fontSize: 18,
     marginVertical: 10,
-  }
+  },
+  
 });
