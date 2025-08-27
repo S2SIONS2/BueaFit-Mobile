@@ -1,4 +1,4 @@
-import { Tabs, useRouter, useSegments } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Platform, Pressable } from 'react-native';
 
@@ -77,6 +77,14 @@ export default function TabLayout() {
         name="customer"
         options={{
           title: '고객 관리',
+          // tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+          href: null
+        }}
+      />
+      <Tabs.Screen
+        name="treatment"
+        options={{
+          title: '시술 메뉴 관리',
           // tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
           href: null
         }}

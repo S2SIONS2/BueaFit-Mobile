@@ -2,7 +2,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
 import { useAuth } from '@/src/context/AuthContext';
-import { faCalendarDay, faChevronRight, faPlus, faRectangleList, faRightFromBracket, faStore, faUserPen } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarDay, faChevronRight, faPlus, faRectangleList, faRightFromBracket, faSprayCan, faStore, faUserPen } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { Link, useRouter } from 'expo-router';
 import { Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -18,6 +18,7 @@ export default function MenuScreen() {
         { href: '/(app)', label: '금일 현황', icon: faRectangleList },
         { href: '/(app)/booking', label: '예약 관리', icon: faCalendarDay },
         { href: '/(app)/customer', label: '고객 관리', icon: faUserPen },
+        { href: '/(app)/treatment', label: '시술 메뉴 관리', icon: faSprayCan },
       ],
     },
     {
