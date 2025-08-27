@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
-import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
-import { apiFetch } from '@/src/api/apiClient';
-import { ActivityIndicator, StyleSheet, TouchableOpacity, View, Alert } from 'react-native';
+import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
+import { apiFetch } from '@/src/api/apiClient';
+import { useAuth } from '@/src/context/AuthContext';
+import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 interface Shop {
-  id: string;
+  id: number;
   name: string;
 }
 
@@ -15,6 +16,7 @@ export default function SelectShopScreen() {
   const [loading, setLoading] = useState(true);
   const [shops, setShops] = useState<Shop[]>([]);
   const router = useRouter();
+  const { selectShop } = useAuth();
 
   useEffect(() => {
     const fetchShops = async () => {
@@ -42,17 +44,18 @@ export default function SelectShopScreen() {
     fetchShops();
   }, [router]);
 
-  const handleSelectShop = async (shopId: string) => {
+  const handleSelectShop = async (shop: Shop) => {
     try {
       const res = await apiFetch('/shops/selected', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ shop_id: shopId }),
+        body: JSON.stringify({ shop_id: shop.id }),
       });
 
       if (res.ok) {
+        await selectShop({ id: String(shop.id), name: shop.name });
         router.replace('/(app)');
       } else {
         const errorData = await res.json().catch(() => ({}));
@@ -79,7 +82,7 @@ export default function SelectShopScreen() {
               <TouchableOpacity
                 key={shop.id}
                 style={styles.shopButton}
-                onPress={() => handleSelectShop(shop.id)}
+                onPress={() => handleSelectShop(shop)}
               >
                 <ThemedText style={styles.shopButtonText}>{shop.name}</ThemedText>
               </TouchableOpacity>

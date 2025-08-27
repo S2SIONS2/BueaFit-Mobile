@@ -8,13 +8,15 @@ export default function OnboardingLayout() {
     <Stack>
       <Stack.Screen 
         name="select-shop" 
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="set-store" 
         options={{
-          title: '가게 선택',
-          headerLeft: () => null, // Removes the back button
+          title: '가게 등록',
           headerRight: () => <Button title="메뉴" onPress={() => router.push('/menu')} />
         }}
       />
-      <Stack.Screen name="set-store" options={{ title: '가게 등록' }} />
     </Stack>
   );
 }

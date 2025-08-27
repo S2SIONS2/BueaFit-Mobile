@@ -1,15 +1,23 @@
+import { apiFetch } from '@/src/api/apiClient';
 import * as SecureStore from 'expo-secure-store';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
-import { apiFetch } from '@/src/api/apiClient';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
+const SELECTED_SHOP_KEY = 'selectedShop';
+
+interface Shop {
+  id: string;
+  name: string;
+}
 
 interface AuthContextType {
   token: string | null;
+  selectedShop: Shop | null;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  selectShop: (shop: Shop) => Promise<void>;
   isLoaded: boolean;
 }
 
@@ -17,22 +25,27 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
+  const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const loadToken = async () => {
+    const loadAuthData = async () => {
       try {
         const storedToken = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+        const storedShopString = await SecureStore.getItemAsync(SELECTED_SHOP_KEY);
         if (storedToken) {
           setToken(storedToken);
         }
+        if (storedShopString) {
+          setSelectedShop(JSON.parse(storedShopString));
+        }
       } catch (e) {
-        console.error('Failed to load token', e);
+        console.error('Failed to load auth data', e);
       } finally {
         setIsLoaded(true);
       }
     };
-    loadToken();
+    loadAuthData();
   }, []);
 
   const signIn = async (email: string, password: string) => {
@@ -77,9 +90,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const selectShop = async (shop: Shop) => {
+    try {
+      await SecureStore.setItemAsync(SELECTED_SHOP_KEY, JSON.stringify(shop));
+      setSelectedShop(shop);
+    } catch (e) {
+      console.error('Failed to save selected shop', e);
+      Alert.alert('Error', 'Could not save your shop selection.');
+    }
+  };
+
   const signOut = async () => {
     try {
-      // Use apiFetch to automatically include the Authorization header
       const response = await apiFetch('/auth/logout', {
         method: 'POST',
       });
@@ -91,18 +113,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.error('Server logout failed:', errorData.message);
       }
     } catch (error) {
-      // apiFetch can throw an error if token refresh fails
       console.error('Logout API call failed:', error);
     } finally {
-      // Always clear local tokens and state on logout
       await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
       await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
+      await SecureStore.deleteItemAsync(SELECTED_SHOP_KEY);
       setToken(null);
+      setSelectedShop(null);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ token, signIn, signOut, isLoaded }}>
+    <AuthContext.Provider value={{ token, selectedShop, signIn, signOut, selectShop, isLoaded }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,5 +1,5 @@
-import { Tabs, useRouter } from 'expo-router';
-import React from 'react';
+import { Tabs, useRouter, useSegments } from 'expo-router';
+import React, { useEffect } from 'react';
 import { Platform, Pressable } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
@@ -7,12 +7,30 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useAuth } from '@/src/context/AuthContext';
 import { faCalendarDay } from '@fortawesome/free-solid-svg-icons/faCalendarDay';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const router = useRouter();
+  const { selectedShop, isLoaded } = useAuth();
+
+  useEffect(() => {
+    if (!isLoaded) {
+      return;
+    }
+    // If the user is authenticated but has not selected a shop,
+    // redirect them to the shop selection screen.
+    if (!selectedShop) {
+      router.replace('/(onboarding)/select-shop');
+    }
+  }, [isLoaded, selectedShop]);
+
+  // Render nothing until the auth and shop selection state is loaded
+  if (!isLoaded || !selectedShop) {
+    return null;
+  }
 
   return (
     <Tabs

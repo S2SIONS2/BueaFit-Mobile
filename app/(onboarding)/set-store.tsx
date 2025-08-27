@@ -1,19 +1,19 @@
+import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { Colors } from '@/constants/Colors';
+import { apiFetch } from '@/src/api/apiClient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
   ActivityIndicator,
+  Alert,
   Modal,
   Pressable,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedText } from '@/components/ThemedText';
-import { apiFetch } from '@/src/api/apiClient';
-import { Colors } from '@/constants/Colors';
 
 export default function StoreRegistrationPage() {
   const router = useRouter();
@@ -104,6 +104,9 @@ export default function StoreRegistrationPage() {
           <TouchableOpacity style={styles.button} onPress={() => checkRequired() && setStep(4)}>
             <ThemedText style={styles.buttonText}>다음</ThemedText>
           </TouchableOpacity>
+          <TouchableOpacity style={[styles.button, { backgroundColor: '#ccc' }]} onPress={() => router.back()}>
+            <ThemedText style={[styles.buttonText, { color: '#000' }]} onPress={() => setStep(3)}>등록 취소</ThemedText>
+          </TouchableOpacity>
         </View>
       );
     }
@@ -167,6 +170,9 @@ export default function StoreRegistrationPage() {
                 <TextInput style={styles.input} placeholder="사업자 등록번호" value={businessNumber} onChangeText={setBusinessNumber} />
                 <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                   <ThemedText style={styles.buttonText}>등록</ThemedText>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.button, { backgroundColor: '#ccc' }]} onPress={() => setStep(3)}>
+                  <ThemedText style={[styles.buttonText, { color: '#000' }]} onPress={() => setStep(3)}>취소</ThemedText>
                 </TouchableOpacity>
               </View>
             )}
