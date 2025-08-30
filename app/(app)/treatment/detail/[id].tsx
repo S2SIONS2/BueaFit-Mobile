@@ -2,20 +2,18 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
 import { apiFetch } from '@/src/api/apiClient';
-import { faPen, faPlus, faSave, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faPen, faSave, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   FlatList,
-  Modal,
-  Pressable,
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 
 // Interfaces
@@ -33,19 +31,13 @@ interface TreatmentMenu {
 
 export default function TreatmentDetailScreen() {
   const { id } = useLocalSearchParams();
-  // const router = useRouter();
+  const router = useRouter();
 
   // States
   const [menu, setMenu] = useState<TreatmentMenu | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditingName, setIsEditingName] = useState(false);
   const [menuName, setMenuName] = useState('');
-  const [isModalVisible, setModalVisible] = useState(false);
-
-  // New Detail Form States
-  const [newDetailName, setNewDetailName] = useState('');
-  const [newDetailDuration, setNewDetailDuration] = useState('');
-  const [newDetailPrice, setNewDetailPrice] = useState('');
 
   // Data Fetching
   const fetchMenuDetails = useCallback(async () => {
@@ -77,23 +69,71 @@ export default function TreatmentDetailScreen() {
   }, [fetchMenuDetails]);
 
   // --- API Handlers (Placeholders) ---
+  // 시술 메뉴 이름 변경
   const handleUpdateMenuName = async () => {
-    Alert.alert('저장', `메뉴 이름 저장 기능 구현 필요: ${menuName}`);
-    // TODO: Implement PUT /treatment-menus/${id} with { name: menuName }
-    setIsEditingName(false);
-    if(menu) setMenu({...menu, name: menuName});
-  };
+    try {
+      const res = await apiFetch(`/treatment-menus/${menu?.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: menuName }),
+      });
+      console.log(res);
 
-  const handleAddDetail = () => {
-    Alert.alert('추가', `상세 항목 추가 기능 구현 필요: ${newDetailName}`);
-    // TODO: Implement POST /treatment-menus/${id}/details with new detail data
-    setModalVisible(false);
-    // For now, just refresh from server
-    fetchMenuDetails();
-  };
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData);
+      }
 
-  const handleDeleteDetail = (detailId: number) => {
-    Alert.alert('삭제', `상세 항목(ID: ${detailId}) 삭제 기능 구현 필요`);
+      setIsEditingName(false);
+      fetchMenuDetails(); // 변경 후 최신 데이터 재조회
+    }catch(e) {
+      console.error(e);
+    }
+    // if(menu) setMenu({...menu, name: menuName});
+  };
+  // 시술 전체 삭제
+  const handleDeleteMenu = () => {
+    Alert.alert(
+      "시술 메뉴 삭제",
+      `'${menu?.name}' 메뉴 전체를 삭제하시겠습니까? 포함된 모든 시술 항목이 영구적으로 삭제됩니다.`,
+      [
+        { text: "취소", style: "cancel" },
+        {
+          text: "삭제",
+          style: "destructive",
+          onPress: async () => {
+            if (!menu) return;
+            try {
+              const res = await apiFetch(`/treatment-menus/${menu.id}`, { method: 'DELETE' });
+              if (res.ok) {
+                Alert.alert("성공", "메뉴가 삭제되었습니다.", [{ text: "확인", onPress: () => router.back() }]);
+              } else {
+                const err = await res.json();
+                Alert.alert("오류", err.detail || "삭제에 실패했습니다.");
+              }
+            } catch (e) {
+              console.error(e);
+              Alert.alert("오류", "삭제 중 오류가 발생했습니다.");
+            }
+          },
+        },
+      ]
+    );
+  }
+
+  // 상세 메뉴 삭제
+  const handleDeleteDetail = async (detailId: number) => {
+    try {
+      apiFetch(`/treatment-menus/${menu?.id}/details/${detailId}`, {
+        method: 'DELETE',
+      });
+      await fetchMenuDetails(); // 삭제 후 최신 데이터 재조회
+    }catch(e) {
+      console.error(e);
+    }
+    
     // TODO: Implement DELETE /treatment-menus/${menu?.id}/details/${detailId}
   };
 
@@ -139,9 +179,17 @@ export default function TreatmentDetailScreen() {
         ) : (
           <ThemedText type="title" style={styles.title}>{menu.name}</ThemedText>
         )}
-        <TouchableOpacity onPress={() => isEditingName ? handleUpdateMenuName() : setIsEditingName(true)}>
-          <FontAwesomeIcon icon={isEditingName as any ? faSave as any : faPen} size={20} color={Colors.light.tint} />
-        </TouchableOpacity>
+        <View style={styles.detailActions}>
+          <TouchableOpacity style={styles.actionButton} onPress={() => isEditingName ? handleUpdateMenuName() : setIsEditingName(true)}>
+            <FontAwesomeIcon icon={isEditingName as any ? faSave as any : faPen} size={20} color={Colors.light.tint} />
+          </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => handleDeleteMenu()}
+            style={styles.actionButton}
+          >
+            <FontAwesomeIcon icon={faTrash as any} size={20} color="red" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* --- Details List --- */}
@@ -152,26 +200,6 @@ export default function TreatmentDetailScreen() {
         ListHeaderComponent={<ThemedText style={styles.listHeader}>상세 시술 항목</ThemedText>}
         ListEmptyComponent={<ThemedText style={styles.noDetailsText}>등록된 항목이 없습니다.</ThemedText>}
       />
-
-      {/* --- Add Detail Button --- */}
-      <TouchableOpacity style={styles.fab} onPress={() => setModalVisible(true)}>
-        <FontAwesomeIcon icon={faPlus as any} size={22} color="white" />
-      </TouchableOpacity>
-
-      {/* --- Add Detail Modal --- */}
-      <Modal visible={isModalVisible} transparent={true} animationType="slide">
-        <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
-          <Pressable style={styles.modalView} onPress={() => {}}>
-            <ThemedText type="title" style={styles.modalTitle}>새 상세 항목 추가</ThemedText>
-            <TextInput style={styles.input} placeholder="항목 이름" value={newDetailName} onChangeText={setNewDetailName} />
-            <TextInput style={styles.input} placeholder="소요 시간 (분)" value={newDetailDuration} onChangeText={setNewDetailDuration} keyboardType="numeric" />
-            <TextInput style={styles.input} placeholder="가격 (원)" value={newDetailPrice} onChangeText={setNewDetailPrice} keyboardType="numeric" />
-            <TouchableOpacity style={styles.button} onPress={handleAddDetail}>
-              <ThemedText style={styles.buttonText}>추가</ThemedText>
-            </TouchableOpacity>
-          </Pressable>
-        </Pressable>
-      </Modal>
     </ThemedView>
   );
 }

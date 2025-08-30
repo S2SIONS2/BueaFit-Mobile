@@ -4,8 +4,8 @@ import { Colors } from '@/constants/Colors';
 import { apiFetch } from '@/src/api/apiClient';
 import { faBars, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 interface TreatmentDetail {
@@ -80,24 +80,27 @@ export default function TreatmentScreen() {
   const [menu, setMenu] = useState<TreatmentMenu[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchTreatment = async () => {
-      try {
-        const res = await apiFetch('/treatment-menus');
-        const data = await res.json();
-        if (res.ok) {
-          setMenu(data.items);
-        } else {
-          throw new Error(data.message || 'Failed to fetch treatment menus');
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
+  const fetchTreatment = useCallback(async () => {
+    try {
+      const res = await apiFetch('/treatment-menus');
+      const data = await res.json();
+      if (res.ok) {
+        setMenu(data.items);
+      } else {
+        throw new Error(data.message || 'Failed to fetch treatment menus');
       }
-    };
-    fetchTreatment();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchTreatment();
+    }, [fetchTreatment])
+  );
 
   if (loading) {
     return (

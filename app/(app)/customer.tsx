@@ -117,6 +117,7 @@ export default function CustomerScreen() {
     }
   };
 
+  // 고객 정보 수정
   const handleUpdateCustomer = async () => {
     if (!selectedCustomer) return;
 

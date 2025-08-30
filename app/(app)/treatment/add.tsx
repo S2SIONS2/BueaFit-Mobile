@@ -9,7 +9,7 @@ import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
-import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 
 type Group = {
     name: string;
@@ -24,7 +24,6 @@ export default function Page() {
     const [minute, setMinute] = useState(0); // 시술 시간 - 분
     const time = hour + minute // 시술 시간
     const [price, setPrice] = useState(""); // 시술 가격
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const hourOption = [
         { value: 0, label: "0시간" }, { value: 60, label: "1시간" }, { value: 120, label: "2시간" },
         { value: 180, label: "3시간" }, { value: 240, label: "4시간" }, { value: 300, label: "5시간" },
@@ -45,7 +44,6 @@ export default function Page() {
     const nameRef = useRef<TextInput>(null);
     const menuRef = useRef<TextInput>(null);
     const priceRef = useRef<TextInput>(null);
-    const isSubmittingRef = useRef(false);
 
     const router = useRouter();
 
@@ -105,13 +103,8 @@ export default function Page() {
     const handlePickerClose = () => {
         setPicker(prev => ({ ...prev, visible: false }));
     }
-
+    // 새로운 시술 추가
     const newTreatment = async () => {
-        if (isSubmittingRef.current) return;
-
-        isSubmittingRef.current = true;
-        setIsSubmitting(true);
-
         try {
             if (menu === "") {
                 menuRef.current?.focus();
@@ -183,9 +176,6 @@ export default function Page() {
         } catch (e) {
             console.error(e);
             Alert.alert("오류", "시술 등록 중 오류가 발생했습니다.");
-        } finally {
-            isSubmittingRef.current = false;
-            setIsSubmitting(false);
         }
     };
 
@@ -295,12 +285,8 @@ export default function Page() {
 
                 {/* Buttons */}
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity onPress={newTreatment} style={[styles.submitButton, isSubmitting && styles.disabledButton]} disabled={isSubmitting}>
-                        {isSubmitting ? (
-                            <ActivityIndicator color="#FFFFFF" />
-                        ) : (
-                            <ThemedText style={styles.submitButtonText}>추가하기</ThemedText>
-                        )}
+                    <TouchableOpacity onPress={newTreatment} style={styles.submitButton}>
+                        <ThemedText style={styles.submitButtonText}>추가하기</ThemedText>
                     </TouchableOpacity>
                     <TouchableOpacity style={[styles.cancelButton, { backgroundColor: '#ddd' }]} onPress={() => handleCancel()}>
                         <ThemedText style={[styles.cancelButtonText, { color: '#000' }]}>등록 취소</ThemedText>
@@ -434,9 +420,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: Colors.light.tint
-    },
-    disabledButton: {
-        backgroundColor: '#A9A9A9', // A gray color to indicate disabled state
     },
     submitButtonText: {
         color: 'white',
