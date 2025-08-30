@@ -4,7 +4,7 @@ import { Colors } from '@/constants/Colors';
 import { apiFetch } from '@/src/api/apiClient';
 import { faPen, faPlus, faSave, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -33,7 +33,7 @@ interface TreatmentMenu {
 
 export default function TreatmentDetailScreen() {
   const { id } = useLocalSearchParams();
-  const router = useRouter();
+  // const router = useRouter();
 
   // States
   const [menu, setMenu] = useState<TreatmentMenu | null>(null);
@@ -111,7 +111,7 @@ export default function TreatmentDetailScreen() {
           <FontAwesomeIcon icon={faPen as any} size={16} color={Colors.light.tint} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionButton} onPress={() => handleDeleteDetail(item.id)}>
-          <FontAwesomeIcon icon={faTrash as any} size={16} color="#dc3545" />
+          <FontAwesomeIcon icon={faTrash as any} size={16} color="#ccc" />
         </TouchableOpacity>
       </View>
     </View>

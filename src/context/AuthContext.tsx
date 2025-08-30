@@ -101,6 +101,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signOut = async () => {
+    // Clear the state immediately for a responsive UI.
+    setToken(null);
+    setSelectedShop(null);
+
     try {
       const response = await apiFetch('/auth/logout', {
         method: 'POST',
@@ -115,11 +119,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       console.error('Logout API call failed:', error);
     } finally {
+      // Ensure all local session data is cleared.
       await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
       await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
       await SecureStore.deleteItemAsync(SELECTED_SHOP_KEY);
-      setToken(null);
-      setSelectedShop(null);
     }
   };
 

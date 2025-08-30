@@ -7,6 +7,8 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider, useAuth } from '../src/context/AuthContext';
+import { event } from '../src/lib/event';
+import { Alert } from 'react-native';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -40,9 +42,34 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const { token, isLoaded } = useAuth();
+  const { token, isLoaded, signOut } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      Alert.alert(
+        '세션 만료',
+        '세션이 만료되었습니다. 다시 로그인해주세요.',
+        [
+          {
+            text: '확인',
+            onPress: () => {
+              signOut();
+              router.replace('/(auth)/login');
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+    };
+
+    event.on('sessionExpired', handleSessionExpired);
+
+    return () => {
+      event.off('sessionExpired', handleSessionExpired);
+    };
+  }, [router, signOut]);
 
   useEffect(() => {
     if (!isLoaded) {

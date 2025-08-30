@@ -2,11 +2,11 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
 import { apiFetch } from '@/src/api/apiClient';
-import { faBars, faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 interface TreatmentDetail {
   id: number;
@@ -30,13 +30,13 @@ const TreatmentCard = ({ item }: { item: TreatmentMenu }) => {
     return `${h > 0 ? `${h}시간 ` : ''}${m > 0 ? `${m}분` : ''}`.trim();
   };
 
-  const handleEditDetail = (detailId: number) => {
-    Alert.alert('수정', `상세 항목(ID: ${detailId}) 수정 기능은 여기에 구현됩니다.`);
-  };
+  // const handleEditDetail = (detailId: number) => {
+  //   Alert.alert('수정', `상세 항목(ID: ${detailId}) 수정 기능은 여기에 구현됩니다.`);
+  // };
 
-  const handleDeleteDetail = (detailId: number) => {
-    Alert.alert('삭제', `상세 항목(ID: ${detailId})을(를) 정말 삭제하시겠습니까?`);
-  };
+  // const handleDeleteDetail = (detailId: number) => {
+  //   Alert.alert('삭제', `상세 항목(ID: ${detailId})을(를) 정말 삭제하시겠습니까?`);
+  // };
 
   return (
     <View style={styles.card}>
@@ -59,14 +59,14 @@ const TreatmentCard = ({ item }: { item: TreatmentMenu }) => {
                   소요 시간: {formatDuration(detail.duration_min)} / 가격: {detail.base_price.toLocaleString()}원
                 </ThemedText>
               </View>
-              <View style={styles.detailActions}>
+              {/* <View style={styles.detailActions}>
                 <TouchableOpacity style={styles.actionButton} onPress={() => handleEditDetail(detail.id)}>
                   <FontAwesomeIcon icon={faPen as any} size={16} color={Colors.light.tint} />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.actionButton} onPress={() => handleDeleteDetail(detail.id)}>
                   <FontAwesomeIcon icon={faTrash as any} size={16} color="#ccc" />
                 </TouchableOpacity>
-              </View>
+              </View> */}
             </View>
           ))
         )}
@@ -135,6 +135,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 15,
     backgroundColor: '#f0f2f5',
+    marginBottom: 50,
   },
   centerScreen: {
     flex: 1,

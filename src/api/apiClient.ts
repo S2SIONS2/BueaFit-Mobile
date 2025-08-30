@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import { Alert } from 'react-native';
+import { event } from '../lib/event';
 
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
@@ -42,7 +42,7 @@ const refreshToken = async (): Promise<string | null> => {
   // If refresh fails, clear all tokens to force logout
   await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
   await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
-  Alert.alert('Session Expired', 'Please log in again.');
+  event.emit('sessionExpired');
   // A more robust solution would involve a global navigation instance to redirect to login
   return null;
 };

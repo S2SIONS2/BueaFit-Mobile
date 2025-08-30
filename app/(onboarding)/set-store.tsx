@@ -104,7 +104,7 @@ export default function StoreRegistrationPage() {
           <TouchableOpacity style={styles.button} onPress={() => checkRequired() && setStep(4)}>
             <ThemedText style={styles.buttonText}>다음</ThemedText>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, { backgroundColor: '#ccc' }]} onPress={() => router.back()}>
+          <TouchableOpacity style={[styles.button, { backgroundColor: '#ddd' }]} onPress={() => router.back()}>
             <ThemedText style={[styles.buttonText, { color: '#000' }]} onPress={() => setStep(3)}>등록 취소</ThemedText>
           </TouchableOpacity>
         </View>
