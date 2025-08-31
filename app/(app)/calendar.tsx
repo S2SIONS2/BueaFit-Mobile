@@ -1,9 +1,10 @@
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
+import { apiFetch } from '@/src/api/apiClient';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Calendar, Mode } from 'react-native-big-calendar';
 
@@ -26,6 +27,26 @@ export default function App() {
     setMode('day');
     // setTimeout(() => setMode('month'), 0); // 다시 month로 변경
   };
+
+  // 예약 내역 조회
+  const fetchScheduleList = async () => {
+    try {
+      const res = await apiFetch('/treatments', {
+        method: "GET"
+      })
+      const data = await res.json();
+
+      if(res.status === 200){
+        console.log(data.items);
+      }
+    }catch(e){
+      console.error(e);
+    }
+  }
+
+  useEffect(() => {
+    fetchScheduleList();
+  }, [])
 
   return (
     <ThemedView style={styles.container}>
