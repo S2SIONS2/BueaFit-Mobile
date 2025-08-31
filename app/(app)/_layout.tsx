@@ -67,10 +67,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="booking"
+        name="calendar"
         options={{
           title: '달력',
           tabBarIcon: ({ color }) => <FontAwesomeIcon size={28} icon={faCalendarDay as any} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="booking"
+        options={{
+          title: '예약 추가',
+          // tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
+          href: null
         }}
       />
       <Tabs.Screen

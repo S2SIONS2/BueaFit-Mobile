@@ -16,7 +16,7 @@ export default function MenuScreen() {
       title: '주요 기능',
       items: [
         { href: '/(app)', label: '금일 현황', icon: faRectangleList },
-        { href: '/(app)/booking', label: '예약 관리', icon: faCalendarDay },
+        { href: '/(app)/calendar', label: '예약 관리', icon: faCalendarDay },
         { href: '/(app)/customer', label: '고객 관리', icon: faUserPen },
         { href: '/(app)/treatment', label: '시술 메뉴 관리', icon: faSprayCan },
       ],

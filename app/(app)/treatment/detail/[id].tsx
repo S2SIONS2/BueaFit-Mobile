@@ -68,7 +68,6 @@ export default function TreatmentDetailScreen() {
     fetchMenuDetails();
   }, [fetchMenuDetails]);
 
-  // --- API Handlers (Placeholders) ---
   // 시술 메뉴 이름 변경
   const handleUpdateMenuName = async () => {
     try {
@@ -79,7 +78,6 @@ export default function TreatmentDetailScreen() {
         },
         body: JSON.stringify({ name: menuName }),
       });
-      console.log(res);
 
       if (!res.ok) {
         const errorData = await res.json();
@@ -91,8 +89,8 @@ export default function TreatmentDetailScreen() {
     }catch(e) {
       console.error(e);
     }
-    // if(menu) setMenu({...menu, name: menuName});
   };
+
   // 시술 전체 삭제
   const handleDeleteMenu = () => {
     Alert.alert(
